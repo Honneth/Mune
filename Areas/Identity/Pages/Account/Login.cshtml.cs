@@ -61,13 +61,17 @@ namespace Mune.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            ///// <summary>
+            /////     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            /////     directly from your code. This API may change or be removed in future releases.
+            ///// </summary>
+            //[Required]
+            //[EmailAddress]
+            //public string Email { get; set; }
+
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            public string UserName { get; set; }
+
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -110,12 +114,13 @@ namespace Mune.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-
-                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                // Jeg har ændret det til, at man logger ind med brugernavn og ikke email
+                //var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                var user = await _signInManager.UserManager.FindByNameAsync(Input.UserName);
 
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                if(user != null)
+                if (user != null)
 {
                     var result = await _signInManager.PasswordSignInAsync(
                         user.UserName,
@@ -147,8 +152,6 @@ namespace Mune.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
-
-
             }
 
             // If we got this far, something failed, redisplay form
