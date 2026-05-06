@@ -8,6 +8,9 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item" style="font-weight: bold;">
+            <a class="nav-link text-dark btn-custom" asp-controller="UserPosts" asp-action="Create" title="Manage">Opret Opslag</a>
+        </li>
+    <li class="nav-item" style="font-weight: bold;">
         <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@User.Identity?.Name</a>
     </li>
     <li class="nav-item">

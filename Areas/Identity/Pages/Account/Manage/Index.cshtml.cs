@@ -87,7 +87,6 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 City = additionalUserData.City,
                 Instrument = additionalUserData.Instrument
-
             };
         }
 
