@@ -52,6 +52,12 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public class InputModel
         {
+            [Display(Name = "Brugernavn")]
+            public string UserName { get; set; }
+
+            [Display(Name = "Navn")]
+            public string Name { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -60,19 +66,28 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Telefonnummer")]
             public string PhoneNumber { get; set; }
 
-            [Display(Name = "Brugernavn")]
-            public string UserName { get; set; }
+            [Display(Name = "By")]
+            public string City { get; set; }
+
+            [Display(Name = "Instrument")]
+            public string Instrument { get; set; }
         }
 
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);          
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
+            var additionalUserData = await _userManager.GetUserAsync(User);
 
             Input = new InputModel
             {
                 UserName = userName,
-                PhoneNumber = phoneNumber
+                Name = additionalUserData.Name,
+                PhoneNumber = phoneNumber,
+                City = additionalUserData.City,
+                Instrument = additionalUserData.Instrument
+
             };
         }
 
@@ -91,6 +106,13 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
+            // opdater custom fields
+            user.Name = Input.Name;
+            user.City = Input.City;
+            user.Instrument = Input.Instrument;
+            var result = await _userManager.UpdateAsync(user);
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -100,17 +122,6 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 return Page();
-            }
-
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
             }
 
             var userName = await _userManager.GetUserNameAsync(user);
@@ -128,6 +139,17 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
                     return Page();
                     //StatusMessage = "Unexpected error when trying to set user name.";
                     //return RedirectToPage();
+                }
+            }
+
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            if (Input.PhoneNumber != phoneNumber)
+            {
+                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                if (!setPhoneResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
                 }
             }
 

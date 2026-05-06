@@ -12,13 +12,25 @@
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.UserName" class="form-control" placeholder="Please choose your username." />
+                <input asp-for="Input.UserName" class="form-control" placeholder="Indtast brugernavn" />
                 <label asp-for="Input.UserName" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                <input asp-for="Input.Name" class="form-control" placeholder="Indtast fulde navn" />
+                <label asp-for="Input.Name" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Indtast telefonnummer"/>
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.City" class="form-control" placeholder="Indtast by" />
+                <label asp-for="Input.City" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Instrument" class="form-control" placeholder="Indtast instrument" />
+                <label asp-for="Input.Instrument" class="form-label"></label>
             </div>
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-custom">Save</button>
         </form>
