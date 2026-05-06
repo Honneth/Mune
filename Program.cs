@@ -62,8 +62,8 @@ namespace Mune
                 }
             }
 
-            // ---------------------- Oprettelse af ADMIN (der ikke allerede eksisterer) -------------------------------------
-            // Admin tilføjes for at få mulighed for senere brug
+            // ---------------------- Opsætning af testbrugere -------------------------------------
+            // Tre testbrugere sættes op, så projektet nemt kan initialiseres og bruges
 
             using (var scope = app.Services.CreateScope())
             {
@@ -79,7 +79,7 @@ namespace Mune
                     {
                         var user = new User();
                         user.Email = email;
-                        user.UserName = email;
+                        user.UserName = $"Bruger{i}";
                         //user.PasswordHash = password;
                         user.EmailConfirmed = true; // denne hardcoder vi true, da vi ikke har email server sat op, der kan sende confirmation emails ud
                         var result = await userManager.CreateAsync(user, password);
