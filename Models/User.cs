@@ -4,11 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mune.Models
 {
-    // Model der repræsenterer brugere
-    // Bygger på Identity user, da der er authentication
     public class User : IdentityUser
     {
-        //  Key og PhoneNumber nedarves fra IdentityUse
+        //  Key and Phone is inherited from IdentityUser
 
         public String? Name { get; set; }
 
@@ -20,6 +18,6 @@ namespace Mune.Models
 
         // Navigation property
         public virtual ICollection<UserPost>? UserPosts { get; set; }
-        // Virtual: Entity Framework laver IKKE nogen kolonne i Customers table
+       
     }
 }

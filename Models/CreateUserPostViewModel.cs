@@ -5,15 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mune.Models
 {
-    public class UserPost
+    public class CreateUserPostViewModel
     {
-        // Attributes are for DATABASE validation
 
-        public int Id { get; set; }
-
-        [ForeignKey(nameof(User))]
-        public string UserId { get; set; } = null!;
-
+        // Attributes are for FORM validation
         [Required, MaxLength(100)]
         public string Headline { get; set; } = null!;
 
@@ -22,12 +17,5 @@ namespace Mune.Models
 
         [Required, MaxLength(500)]
         public string PostText { get; set; } = null!;
-
-        [Required]
-        public DateTime Timestamp { get; set; }
-
-        // Navigation property
-        [ValidateNever]
-        public virtual User User { get; set; } = null!;
     }
 }

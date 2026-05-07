@@ -17,9 +17,9 @@ namespace Mune
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            // Konfiguration af brugerretigheder. User nedarver fra IdentityUSer
+            // Config of user administration. User inherits from IdentityUser
             builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddRoles<IdentityRole>() // Tilføjer muligheden for at lave brugerroller
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
@@ -46,8 +46,7 @@ namespace Mune
             app.MapRazorPages()
                .WithStaticAssets();
 
-            // ---------------------- Oprettelse af ROLLER (der ikke allerede eksisterer) -------------------------------------
-            // Vi opretter kun rollen User, da andet ikke er nødvendigt i denne prototype
+            // Declaring roles
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -62,26 +61,22 @@ namespace Mune
                 }
             }
 
-            // ---------------------- Opsætning af testbrugere -------------------------------------
-            // Tre testbrugere sættes op, så projektet nemt kan initialiseres og bruges
-
+            // Three test-users are created to make setup of system easier on different machines.
             using (var scope = app.Services.CreateScope())
             {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-                // Oprettelse af tre testbrugere
                 for (int i = 1; i <= 3; i++)
                 {
                     var email = $"Bruger{i}@Bruger{i}.dk";
                     var password = $"!Bruger{i}";
-                    // hvis admin-rollen ikke allerede eksisterer
+
                     if (await userManager.FindByEmailAsync(email) == null)
                     {
                         var user = new User();
                         user.Email = email;
                         user.UserName = $"Bruger{i}";
-                        //user.PasswordHash = password;
-                        user.EmailConfirmed = true; // denne hardcoder vi true, da vi ikke har email server sat op, der kan sende confirmation emails ud
+                        user.EmailConfirmed = true; // Hardcoded true, because email server is not set up in this prototype
                         var result = await userManager.CreateAsync(user, password);
 
                         if (!result.Succeeded)

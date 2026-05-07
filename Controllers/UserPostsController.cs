@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mune.Data;
 using Mune.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mune.Controllers
 {
     public class UserPostsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public UserPostsController(ApplicationDbContext context)
+        private readonly UserManager<User> _userManager;
+        public UserPostsController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: UserPosts
@@ -48,7 +50,7 @@ namespace Mune.Controllers
         // GET: UserPosts/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -57,16 +59,36 @@ namespace Mune.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Headline,City,PostText,Timestamp")] UserPost userPost)
+        public async Task<IActionResult> Create(CreateUserPostViewModel model)
         {
+
+            //A validation error happens when not all
+
+            // Get active user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
+
+                var userPost = new UserPost
+                {
+                    Headline = model.Headline,
+                    City = model.City,
+                    PostText = model.PostText,
+                    UserId = user.Id, // Based on active user
+                    Timestamp = DateTime.Now
+                };
+
                 _context.Add(userPost);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
-            return View(userPost);
+            return View(model);
         }
 
         // GET: UserPosts/Edit/5
@@ -91,7 +113,7 @@ namespace Mune.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Headline,City,PostText,Timestamp")] UserPost userPost)
+        public async Task<IActionResult> Edit(int id, [Bind("Headline,City,PostText,Timestamp")] UserPost userPost)
         {
             if (id != userPost.Id)
             {
