@@ -15,15 +15,19 @@ namespace Mune.Models
         public string UserId { get; set; } = null!;
 
         [Required, MaxLength(100)]
+        [DisplayName("Overskrift")]
         public string Headline { get; set; } = null!;
 
         [Required, MaxLength(30)]
+        [DisplayName("By")]
         public string City { get; set; } = null!;
 
         [Required, MaxLength(500)]
+        [DisplayName("Beskrivelse")]
         public string PostText { get; set; } = null!;
 
         [Required]
+        [DisplayName("Opslået")]
         public DateTime Timestamp { get; set; }
 
         // Navigation property

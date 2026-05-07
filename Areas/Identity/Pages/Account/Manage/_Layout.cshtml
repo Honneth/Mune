@@ -9,20 +9,43 @@
     }
 }
 
-<h1>Manage your account</h1>
+<div style="max-width: 1000px; margin: 0 auto;">
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
+    <h1 style="text-align:left;">Brugeroplysninger</h1>
+
+    <hr style="width:100%; margin: 20px 0;" />
+
+    <div style="display:flex; justify-content:center; gap: 20px">
+
+        <div>
+            <div style="width: 200px; text-align:left;">
+                <partial name="_ManageNav" />
+            </div>
         </div>
-        <div class="col-md-9">
+
+        <div style="flex:1;max-width: 800px; text-align:left;">
             @RenderBody()
         </div>
+
     </div>
 </div>
+
+@* <div class="container" style="max-width: 1000px; alignment: center">
+    
+<h1>Brugeroplsyninger</h1>
+
+    <div>
+        <hr style="width:50%;" />
+        <div class="row">
+            <div class="col-md-3" style="width:20%">
+                <partial name="_ManageNav" />
+            </div>
+            <div class="col-md-9" style="width:80%">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div> *@
 
 @section Scripts {
     @RenderSection("Scripts", required: false)

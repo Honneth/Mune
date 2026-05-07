@@ -61,10 +61,12 @@ namespace Mune
                 }
             }
 
-            // Three test-users are created to make setup of system easier on different machines.
+            // Sampler users and posts
             using (var scope = app.Services.CreateScope())
             {
+                // ___ Sample users ___
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 for (int i = 1; i <= 3; i++)
                 {
@@ -88,10 +90,31 @@ namespace Mune
                             continue;
                         }
                         await userManager.AddToRoleAsync(user, "User");
+
+                        if (i == 1)
+                        {
+                            context.UserPosts.Add(new UserPost
+                            {
+                                UserId = user.Id,
+                                Headline = $"Guitarrist søges",
+                                City = "Odense",
+                                PostText = $"Rockband i Odense søger en rock-guitarrist til at spille jobs.",
+                                Timestamp = DateTime.Now
+                            });
+                        } else if (i == 2)
+                        {
+                            context.UserPosts.Add(new UserPost
+                            {
+                                UserId = user.Id,
+                                Headline = $"Trommeslager søges Nordjylland",
+                                City = "Skagen",
+                                PostText = $"Rockband i Skagen søger en trommeslager til at spille jobs.",
+                                Timestamp = DateTime.Now
+                            });
+                        }
                     }
                 }
             }
-
             app.Run();
         }
     }

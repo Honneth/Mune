@@ -26,7 +26,12 @@ namespace Mune.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.UserPosts.Include(u => u.User);
+
+            // Get active user
+            var user = await _userManager.GetUserAsync(User);
+
+            var applicationDbContext = _context.UserPosts
+                .Where(p => p.UserId == user.Id);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -106,7 +111,9 @@ namespace Mune.Controllers
             }
 
             var userPost = await _context.UserPosts.FindAsync(id);
-            if (userPost == null)
+            var user = await _userManager.GetUserAsync(User);
+
+            if (userPost == null || user == null || userPost.UserId != user.Id)
             {
                 return NotFound();
             }
@@ -173,7 +180,9 @@ namespace Mune.Controllers
             var userPost = await _context.UserPosts
                 .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (userPost == null)
+            var user = await _userManager.GetUserAsync(User);
+
+            if (userPost == null || user == null || userPost.UserId != user.Id)
             {
                 return NotFound();
             }

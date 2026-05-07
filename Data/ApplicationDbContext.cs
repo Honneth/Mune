@@ -10,6 +10,6 @@ namespace Mune.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options){}
         public DbSet<UserPost> UserPosts { get; set; }
-    }
 
+    }
 }

@@ -1,10 +1,9 @@
 :root {
-    --primary: #7D3B77; 
-    --secondary: #A64E9F; 
-    --accent: #FAB12F; 
-    --light-bg: #EBD5EA;
+    --primary: #7D3B77;
+    --secondary: #A64E9F;
+    --accent: #FAB12F;
+    --light-bg: #CEB6CC;
 
-    --card: #ffffff;
     --border: #7D3B77;
     --text-main: #512950;
     --text-muted: #555555;
@@ -35,12 +34,12 @@ html {
 }
 
 .custom-navbar {
-    background-color: #D8ACD4; /* din farve */
+    background-color: #D8ACD4;
 }
 
 body {
     margin-bottom: 60px;
-    background: var(--light-bg);
+    background: color-mix(in srgb, var(--secondary) 20%, white);
     color: var(--text-main);
 }
 
@@ -53,10 +52,44 @@ body {
   text-align: start;
 }
 
+
+/* Posts Card */
+.post {
+    
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.card-style {
+    background: color-mix(in srgb, var(--secondary) 10%, white);
+    max-width: 600px;
+}
+
+.post-scroll {
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+
 /* Buttons */
+.btn-custom-muted {
+    color: color-mix(in srgb, var(--accent) 30%, black);
+    background-color: color-mix(in srgb, var(--accent) 65%, white);
+    border: 1px solid color-mix(in srgb, var(--accent) 80%, black);
+    border-radius: 0.375rem;
+}
+
+    .btn-custom-muted:hover {
+        background-color: color-mix(in srgb, var(--accent) 40%, white);
+        border: 1px solid var(--accent);
+        border-radius: 0.375rem;
+    }
+
 .btn-custom {
     background-color: var(--accent);
-    border: 2px solid var(--primary);
+    border: 2px solid color-mix(in srgb, var(--accent) 80%, black);
     border-radius: 0.375rem;
 }
 
@@ -83,4 +116,11 @@ body {
 
     background-color: color-mix(in srgb, var(--accent) 85%, white);
     border-radius: 0.375rem;
+}
+
+.table th {
+    background-color: color-mix(in srgb, var(--secondary) 30%, white);
+}
+.table td {
+    background-color: color-mix(in srgb, var(--secondary) 25%, white);
 }
