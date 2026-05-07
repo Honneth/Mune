@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace Mune.Controllers
         }
 
         // GET: UserPosts
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.UserPosts.Include(u => u.User);
@@ -29,6 +31,7 @@ namespace Mune.Controllers
         }
 
         // GET: UserPosts/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,9 +51,11 @@ namespace Mune.Controllers
         }
 
         // GET: UserPosts/Create
+        [Authorize]
         public IActionResult Create()
         {
             //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+
             return View();
         }
 
@@ -92,6 +97,7 @@ namespace Mune.Controllers
         }
 
         // GET: UserPosts/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,8 +110,18 @@ namespace Mune.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
-            return View(userPost);
+
+            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
+
+            var model = new EditUserPostViewModel
+            {
+                Id = userPost.Id,
+                Headline = userPost.Headline,
+                City = userPost.City,
+                PostText = userPost.PostText
+            };
+
+            return View(model); // UserPost?
         }
 
         // POST: UserPosts/Edit/5
@@ -113,18 +129,19 @@ namespace Mune.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Headline,City,PostText,Timestamp")] UserPost userPost)
+        public async Task<IActionResult> Edit(EditUserPostViewModel model)
         {
-            if (id != userPost.Id)
-            {
-                return NotFound();
-            }
+            var userPost = await _context.UserPosts.FindAsync(model.Id);
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(userPost);
+                    userPost.Headline = model.Headline;
+                    userPost.City = model.City;
+                    userPost.PostText = model.PostText;
+                    userPost.Timestamp = DateTime.Now;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -140,11 +157,12 @@ namespace Mune.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
+            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
             return View(userPost);
         }
 
         // GET: UserPosts/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

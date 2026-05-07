@@ -57,11 +57,13 @@ body {
 .btn-custom {
     background-color: var(--accent);
     border: 2px solid var(--primary);
+    border-radius: 0.375rem;
 }
 
     .btn-custom:hover {
         background-color: color-mix(in srgb, var(--accent) 85%, white);
         border: 2px solid var(--primary);
+        border-radius: 0.375rem;
     }
 
 

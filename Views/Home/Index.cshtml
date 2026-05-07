@@ -1,8 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+
+
+    // Headline texts...
+    var headlines = new List<string>
+    {
+        "Find musikken!",
+        "Mød musikere!",
+        "Spil sammen!",
+        "Find musikfællesskab!",
+        "Find band!",
+        "Skab musikalske forbindelser!"
+    };
+
+
+    // ... chosen at random on startup
+    var random = new Random();
+    string selectedHeadline = headlines[random.Next(headlines.Count)];
+
 }
 
 <div class="text-center">
-    <h1 class="display-4">Find musikken!</h1>
+    <h1 class="display-4">@selectedHeadline</h1>
 @*     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> *@
 </div>
+
