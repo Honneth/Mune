@@ -30,6 +30,7 @@ namespace Mune.Models
         [DisplayName("Opslået")]
         public DateTime Timestamp { get; set; }
 
+
         // Navigation property
         [ValidateNever]
         public virtual User User { get; set; } = null!;

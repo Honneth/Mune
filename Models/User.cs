@@ -16,8 +16,12 @@ namespace Mune.Models
 
         public String? City { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual ICollection<UserPost>? UserPosts { get; set; }
-       
+
+        public virtual ICollection<Message> SentMessages { get; set; }
+
+        public virtual ICollection<Message> ReceivedMessages { get; set; }
+
     }
 }
