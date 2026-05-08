@@ -39,17 +39,22 @@ namespace Mune.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
+            var error = new CustomErrorViewModel();
+
             if (id == null)
             {
-                return NotFound();
+                error.Description = "Intet opslagsid angivet.";
+                return View("Error", error);
             }
 
             var userPost = await _context.UserPosts
                 .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (userPost == null)
             {
-                return NotFound();
+                error.Description = "Intet opslag med dette id.";
+                return View("Error", error);
             }
 
             return View(userPost);
@@ -105,17 +110,25 @@ namespace Mune.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            var error = new CustomErrorViewModel();
+
             if (id == null)
             {
-                return NotFound();
+                error.Description = "Intet opslagsid angivet.";
+                return View("Error", error);
             }
 
             var userPost = await _context.UserPosts.FindAsync(id);
             var user = await _userManager.GetUserAsync(User);
 
-            if (userPost == null || user == null || userPost.UserId != user.Id)
+            if (userPost == null)
             {
-                return NotFound();
+                error.Description = "Intet opslag med dette id.";
+                return View("Error", error);
+            } else if (userPost.UserId != user.Id)
+            {
+                error.Description = "Du har ikke adgang til dette opslag!";
+                return View("Error", error);
             }
 
             //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
@@ -172,9 +185,12 @@ namespace Mune.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            var error = new CustomErrorViewModel();
+
             if (id == null)
             {
-                return NotFound();
+                error.Description = "Intet opslagsid angivet.";
+                return View("Error", error);
             }
 
             var userPost = await _context.UserPosts
@@ -182,9 +198,15 @@ namespace Mune.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             var user = await _userManager.GetUserAsync(User);
 
-            if (userPost == null || user == null || userPost.UserId != user.Id)
+            if (userPost == null)
             {
-                return NotFound();
+                error.Description = "Intet opslag med dette id.";
+                return View("Error", error);
+            }
+            else if (userPost.UserId != user.Id)
+            {
+                error.Description = "Du har ikke adgang til dette opslag!";
+                return View("Error", error);
             }
 
             return View(userPost);
