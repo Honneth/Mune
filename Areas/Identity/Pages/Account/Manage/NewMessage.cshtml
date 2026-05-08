@@ -1,0 +1,31 @@
+﻿@page
+@model NewMessage
+@{
+    ViewData["Title"] = "Ny besked";
+    ViewData["ActivePage"] = ManageNavPages.NewMessage;
+}
+
+<form method="post">
+    <div class="mb-3">
+        <h6>Modtager</h6>
+        <input asp-for="Input.Receiver" class="form-control" />
+        <span asp-validation-for="Input.Receiver" class="text-danger"></span>
+        @if (Model.StatusMessage != null)
+        {
+            <div class="alert alert-success">
+                @Model.StatusMessage
+            </div>
+        }
+        <br />
+
+        <h6>Besked</h6>
+        <textarea asp-for="Input.Message" class="form-control" rows="8"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-custom">
+        Send
+    </button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,14 @@
+﻿@page
+@model ConversationsModel
+@{
+    ViewData["Title"] = "Beskeder";
+    ViewData["ActivePage"] = ManageNavPages.Conversations;
+}
+
+<h3>@ViewData["Title"]</h3>
+<div class="nav-item" style="max-width:50px; text-align:center;">
+    <a class="nav-link btn-custom @ManageNavPages.NewMessageNavClass(ViewContext)" id="newMessage" asp-page="./NewMEssage">Ny</a>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

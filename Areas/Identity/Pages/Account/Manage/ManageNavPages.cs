@@ -31,7 +31,8 @@ namespace  Mune.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string ChangePassword => "ChangePassword";
 
-        public static string Posts => "Posts";
+        public static string Conversations => "Conversations";
+        public static string NewMessage => "NewMessage";
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -81,8 +82,10 @@ namespace  Mune.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
 
-        // Custom Posts Nav Class
-        public static string PostsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Posts);
+        // Custom
+        public static string ConversationsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Conversations);
+
+        public static string NewMessageNavClass(ViewContext viewContext) => PageNavClass(viewContext, NewMessage);
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
