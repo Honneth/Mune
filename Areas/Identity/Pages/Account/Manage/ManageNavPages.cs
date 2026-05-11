@@ -32,6 +32,7 @@ namespace  Mune.Areas.Identity.Pages.Account.Manage
         public static string ChangePassword => "ChangePassword";
 
         public static string Conversations => "Conversations";
+        public static string Conversation => "Conversation";
         public static string NewMessage => "NewMessage";
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace  Mune.Areas.Identity.Pages.Account.Manage
 
         // Custom
         public static string ConversationsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Conversations);
-
+        public static string ConversationNavClass(ViewContext viewContext) => PageNavClass(viewContext, Conversation);
         public static string NewMessageNavClass(ViewContext viewContext) => PageNavClass(viewContext, NewMessage);
 
         /// <summary>

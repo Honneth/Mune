@@ -7,8 +7,6 @@ namespace Mune.Models
 {
     public class UserPost
     {
-        // Attributes are for DATABASE validation
-
         public int Id { get; set; }
 
         [ForeignKey(nameof(User))]

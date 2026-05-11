@@ -1,0 +1,71 @@
+﻿@page
+@model ConversationModel
+@{
+    ViewData["Title"] = "Beskeder";
+    ViewData["ActivePage"] = ManageNavPages.Conversation;
+}
+
+@* Reload ConversationId on subsequent loads of this page from this page *@
+<input type="hidden" asp-for="ConversationId" />
+
+<h3>@ViewData["Title"] med @Model.reciverUserName</h3>
+<div class="col-12 post-scroll" style="max-height:500px;">
+
+    @* Look through messages in conversation *@
+    @foreach(Message message in Model.Messages)
+    {
+
+        @* if sender is currentyl logged in user *@
+        if(message.Sender.UserName == Model.CurrentUserUserName)
+        {
+            <div class="d-flex flex-column mb-3 align-items-start" style="max-width: 70%;">
+                <div>
+                    @message.Sender.UserName
+                </div>
+                <div class="card w-100">
+                    <div class="card-body" style="background-color:lightyellow">
+                    
+                        <p class="card-text">@message.MessageText</p>
+                        <p class="card-text"><small class="text-muted fst-italic" style="text">@message.Timestamp</small></p>
+                    </div>
+                </div>
+            </div>
+        
+        @* otherwise sender is the other user in the conversation*@
+        } else
+        {
+            <div class="d-flex flex-column mb-3 align-items-end text-end" style="max-width: 70%;">
+                <div>
+                    @message.Sender.UserName
+                </div>
+                <div class="card w-100">
+                    <div class="card-body" style="background-color:aliceblue">
+                        <p class="card-text">@message.MessageText</p>
+                        <p class="card-text"><small class="text-muted fst-italic" style="text">@message.Timestamp</small></p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<br/>  
+<form method="post">
+    <div class="mb-3">
+        @if (Model.StatusMessage != null)
+        {
+            <div class="alert alert-success">
+                @Model.StatusMessage
+            </div>
+        }
+        <h6>Besked</h6>
+        <textarea asp-for="Input.Message" class="form-control" rows="8"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-custom">
+        Send
+    </button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

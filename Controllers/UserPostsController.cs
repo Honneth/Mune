@@ -30,6 +30,7 @@ namespace Mune.Controllers
             // Get active user
             var user = await _userManager.GetUserAsync(User);
 
+            // Get user posts
             var applicationDbContext = _context.UserPosts
                 .Where(p => p.UserId == user.Id);
             return View(await applicationDbContext.ToListAsync());
@@ -64,8 +65,6 @@ namespace Mune.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-
             return View();
         }
 
@@ -76,8 +75,6 @@ namespace Mune.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserPostViewModel model)
         {
-
-            //A validation error happens when not all
 
             // Get active user
             var user = await _userManager.GetUserAsync(User);
@@ -131,8 +128,6 @@ namespace Mune.Controllers
                 return View("Error", error);
             }
 
-            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
-
             var model = new EditUserPostViewModel
             {
                 Id = userPost.Id,
@@ -141,7 +136,7 @@ namespace Mune.Controllers
                 PostText = userPost.PostText
             };
 
-            return View(model); // UserPost?
+            return View(model);
         }
 
         // POST: UserPosts/Edit/5
@@ -177,7 +172,7 @@ namespace Mune.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userPost.UserId);
+
             return View(userPost);
         }
 

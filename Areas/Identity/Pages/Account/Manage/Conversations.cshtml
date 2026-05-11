@@ -7,8 +7,23 @@
 
 <h3>@ViewData["Title"]</h3>
 <div class="nav-item" style="max-width:50px; text-align:center;">
-    <a class="nav-link btn-custom @ManageNavPages.NewMessageNavClass(ViewContext)" id="newMessage" asp-page="./NewMEssage">Ny</a>
+    <a class="nav-link btn-custom @ManageNavPages.NewMessageNavClass(ViewContext) "id="newMessage" asp-page="./NewMessage">Ny</a>
 </div>
+
+<div class="post-scroll">
+    @foreach (Conversation conversation in Model.Conversations)
+    {
+        <div class="custom-nav-pills nav-link">
+            <li class="nav-item"><a class="nav-link @ManageNavPages.ConversationNavClass(ViewContext)"
+                id="conversation"
+                asp-page="./Conversation"
+                asp-route-CurrentUserId="@Model.CurrentUserId"
+                asp-route-ConversationId="@conversation.Id">@conversation.User2Id - @conversation.Timestamp</a>
+            </li>
+        </div>
+    }
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

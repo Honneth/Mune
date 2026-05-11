@@ -16,6 +16,7 @@ namespace Mune.Controllers
             _context = context;
         }
 
+        // Individual pages for each post (with deatails about post)
         public async Task<IActionResult> PostDetails(int? id)
         {
             if (id == null)
@@ -35,6 +36,7 @@ namespace Mune.Controllers
             return View(userPost);
         }
 
+        // Load homescreen feed data (posts)
         public IActionResult Index()
         {
             var posts = _context.UserPosts

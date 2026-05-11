@@ -2,25 +2,31 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Mune.Data;
+using Mune.Models;
+using NuGet.Protocol.Plugins;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Mune.Models;
 
 namespace Mune.Areas.Identity.Pages.Account.Manage
 {
     public class ConversationsModel : PageModel
     {
         private readonly UserManager<User> _userManager;
+        private readonly ApplicationDbContext _context;
 
         public ConversationsModel(
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         /// <summary>
@@ -47,95 +53,57 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public class InputModel
+        public class InputModel{}
+
+        public string CurrentUserId { get; set; }
+        public List<Conversation> Conversations { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            [Display(Name = "Beskeder")]
-            public Conversation Conversation { get; set; }
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
+            // Finde current user
+            User currentUser = await _userManager.GetUserAsync(User);
+            CurrentUserId = currentUser.Id;
+
+            // Find currents users conversations 
+             Conversations = await _context.Conversations
+                .Where(c =>
+                    c.User1Id == currentUser.Id ||
+                    c.User2Id == currentUser.Id
+                )
+                .ToListAsync();
+
+            foreach (Conversation c in Conversations)
+            {
+                // If current user is 1 - no problem
+                if (c.User1Id == CurrentUserId)
+                {
+                    // Get username sender
+                    User senderUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Id == c.User2Id);
+                        c.User2Id = senderUser.UserName;
+
+                // If current user is 2 - swap users
+                } else if (c.User2Id == CurrentUserId)
+                {
+
+                    string oldUser1Id = c.User1Id;
+
+                    // Move user 2 to 1, so user 1 is current user
+                    c.User1Id = c.User2Id;
+
+                    // Get username for old user one and save as user2 username.
+                    User senderUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Id == oldUser1Id);
+                        c.User2Id = senderUser.UserName;
+                }
+            }
+
+            return Page();
         }
-
-        //private async Task LoadAsync(User user)
-        //{
-        //    var userName = await _userManager.GetUserNameAsync(user);
-        //    var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-        //    var additionalUserData = await _userManager.GetUserAsync(User);
-
-        //    Input = new InputModel
-        //    {
-        //        UserName = userName,
-        //        Name = additionalUserData.Name,
-        //        PhoneNumber = phoneNumber,
-        //        City = additionalUserData.City,
-        //        Instrument = additionalUserData.Instrument
-        //    };
-        //}
-
-        //public async Task<IActionResult> OnGetAsync()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    if (user == null)
-        //    {
-        //        return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-        //    }
-
-        //    await LoadAsync(user);
-        //    return Page();
-        //}
-
-        //public async Task<IActionResult> OnPostAsync()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-
-        //    // opdater custom fields
-        //    user.Name = Input.Name;
-        //    user.City = Input.City;
-        //    user.Instrument = Input.Instrument;
-        //    var result = await _userManager.UpdateAsync(user);
-
-        //    if (user == null)
-        //    {
-        //        return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-        //    }
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        await LoadAsync(user);
-        //        return Page();
-        //    }
-
-        //    var userName = await _userManager.GetUserNameAsync(user);
-        //    if (Input.UserName != userName)
-        //    {
-        //        var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.UserName);
-        //        if (!setUserNameResult.Succeeded)
-        //        {
-        //            foreach (var error in setUserNameResult.Errors)
-        //            {
-        //                ModelState.AddModelError(string.Empty, error.Description);
-        //            }
-
-        //            await LoadAsync(user);
-        //            return Page();
-        //            //StatusMessage = "Unexpected error when trying to set user name.";
-        //            //return RedirectToPage();
-        //        }
-        //    }
-
-        //    var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-        //    if (Input.PhoneNumber != phoneNumber)
-        //    {
-        //        var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-        //        if (!setPhoneResult.Succeeded)
-        //        {
-        //            StatusMessage = "Unexpected error when trying to set phone number.";
-        //            return RedirectToPage();
-        //        }
-        //    }
-
-        //    await _signInManager.RefreshSignInAsync(user);
-        //    StatusMessage = "Your profile has been updated";
-        //    return RedirectToPage();
-        //}
     }
 }

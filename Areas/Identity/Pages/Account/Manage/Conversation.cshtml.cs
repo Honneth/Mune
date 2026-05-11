@@ -8,20 +8,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Mune.Data;
 using Mune.Models;
+using NuGet.Protocol.Plugins;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mune.Areas.Identity.Pages.Account.Manage
 {
-    public class NewMessage : PageModel
+    public class ConversationModel : PageModel
     {
         private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public NewMessage(
+        public ConversationModel(
             UserManager<User> userManager,
             ApplicationDbContext context)
         {
@@ -55,27 +55,79 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public class InputModel
         {
+            // We send new messages from this page, so we need:
             [Required]
             [Display(Name = "Besked")]
             public string Message { get; set; }
-
-            [Required]
-            [Display(Name = "Modtager")]
-            public string Receiver { get; set; }
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        // Passed from Conversations.cshtml on first load of page
+        [BindProperty(SupportsGet = true)]
+        public string CurrentUserUserName { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int ConversationId { get; set; } // Sender2Id = sender userName
+
+
+        // ... also passed on loads of page from itself
+        public string reciverUserName { get; set; }
+
+        // Local
+        public ICollection<Mune.Models.Message> Messages;
+
+        // On load page usernames are needed and messages
+        public async Task<IActionResult> OnGetAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // Get userser
-            User sender = await _userManager.GetUserAsync(User);
-            User receiver = await _userManager.FindByNameAsync(Input.Receiver);
+            // Finde current user
+            User currentUser = await _userManager.GetUserAsync(User);
 
-            if (receiver == null)
+            CurrentUserUserName = currentUser.UserName;
+
+            // Find currents users conversations 
+            Conversation conversation = await _context.Conversations
+                   .Include(c => c.Messages)
+                        .ThenInclude(m => m.Sender)
+                    .Include(c => c.Messages)
+                        .ThenInclude(m => m.Receiver)
+               .FirstOrDefaultAsync(c => c.Id == ConversationId);
+
+            // Get all messages from conversation
+            Messages = conversation.Messages;
+            List<Mune.Models.Message> messagesList = conversation.Messages.ToList();
+            reciverUserName = messagesList[0].Receiver.UserName;
+
+            return Page();
+        }
+
+        // On post conversation is needed, users and we compose the message
+        public async Task<IActionResult> OnPostAsync()
+        {
+
+            // Find currents users conversations 
+            Conversation conversation = await _context.Conversations
+                   .Include(c => c.Messages)
+                        .ThenInclude(m => m.Sender)
+                    .Include(c => c.Messages)
+                        .ThenInclude(m => m.Receiver)
+               .FirstOrDefaultAsync(c => c.Id == ConversationId);
+
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            List<Mune.Models.Message> messagesList = conversation.Messages.ToList();
+
+            // Here sender/reciever is reversed compared to when handling message functionality for getting messages
+            User sender = messagesList[0].Sender;
+            User receiver = messagesList[0].Receiver;
+
+            if (sender == null)
             {
                 ModelState.AddModelError("Input.Receiver", "Modtager eksisterer ikke.");
                 return Page();
@@ -87,30 +139,11 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            Conversation conversation = await _context.Conversations
-                .FirstOrDefaultAsync(c =>
-                    (c.User1Id == sender.Id     && c.User2Id == receiver.Id) ||
-                    (c.User1Id == receiver.Id   && c.User2Id == sender.Id)
-                );
-
-
-            if (conversation == null)
+            // Generate message object
+            var message = new Mune.Models.Message
             {
-                conversation = new Conversation
-                {
-                    // Conversation start
-                    Timestamp = DateTime.UtcNow,
-                    User1Id = sender.Id,
-                    User2Id = receiver.Id
-                };
-
-                _context.Conversations.Add(conversation);
-            }
-
-            var message = new Message
-            {
-                SenderId = sender.Id,
-                ReceiverId = receiver.Id,
+                ReceiverId = sender.Id,
+                SenderId = receiver.Id,
                 MessageText = Input.Message,
                 Timestamp = DateTime.UtcNow, // This message
                 Conversation = conversation
@@ -122,7 +155,8 @@ namespace Mune.Areas.Identity.Pages.Account.Manage
 
             StatusMessage = "Message sent.";
 
-            return RedirectToPage();
+            // Preserve ConversationID across multiple loads
+            return RedirectToPage(new {ConversationId});
         }
     }
 }
